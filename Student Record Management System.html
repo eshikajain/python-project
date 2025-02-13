@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<!-- saved from url=(0068)file:///C:/Users/Student/Desktop/python/studentmanagementsystem.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Record Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        header {
+            background-color: #5c6bc0;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .container {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .btn {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .input-field {
+            padding: 8px;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        .error {
+            color: red;
+        }
+        .message {
+            color: green;
+            font-weight: bold;
+        }
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Student Record Management System</h1>
+</header>
+
+<div class="container">
+    <div class="action-buttons">
+        <button class="btn" onclick="showAddForm()">Add Student</button>
+        <button class="btn" onclick="viewStudents()">View All Students</button>
+        <button class="btn" onclick="showSearchForm()">Search Student</button>
+    </div>
+
+    <!-- Add Student Form -->
+    <div id="addStudentForm" style="display: block;">
+        <h3>Add Student</h3>
+        <input type="text" id="studentId" class="input-field" placeholder="Enter Student ID">
+        <input type="text" id="studentName" class="input-field" placeholder="Enter Student Name">
+        <input type="number" id="studentAge" class="input-field" placeholder="Enter Student Age">
+        <input type="text" id="studentGrade" class="input-field" placeholder="Enter Student Grade">
+        <button class="btn" onclick="addStudent()">Add</button>
+        <button class="btn" onclick="cancelAdd()">Cancel</button>
+        <p id="addMessage" class="message"></p>
+    </div>
+
+    <!-- Search Student Form -->
+    <div id="searchStudentForm" style="display: none;">
+        <h3>Search Student</h3>
+        <input type="text" id="searchId" class="input-field" placeholder="Enter Student ID">
+        <button class="btn" onclick="searchStudent()">Search</button>
+        <button class="btn" onclick="cancelSearch()">Cancel</button>
+        <p id="searchResult" class="message"></p>
+    </div>
+
+    <!-- Students List -->
+    <div id="studentsList" style="display: none;">
+        <h3>All Students</h3>
+        <table id="studentsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Grade</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody><tr><td>1</td><td>Eshika</td><td>19</td><td>80</td><td>
+                <button class="btn" onclick="updateStudent(&#39;1&#39;)">Update</button>
+                <button class="btn" onclick="deleteStudent(&#39;1&#39;)">Delete</button>
+            </td></tr><tr><td>1</td><td>Eshika</td><td>19</td><td>80</td><td>
+                <button class="btn" onclick="updateStudent(&#39;1&#39;)">Update</button>
+                <button class="btn" onclick="deleteStudent(&#39;1&#39;)">Delete</button>
+            </td></tr></tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+    let students = {};  // To store student records
+    let studentIds = []; // To keep track of student IDs
+
+    // Show Add Student Form
+    function showAddForm() {
+        document.getElementById('addStudentForm').style.display = 'block';
+        document.getElementById('studentsList').style.display = 'none';
+        document.getElementById('searchStudentForm').style.display = 'none';
+    }
+
+    // Cancel Add Student Form
+    function cancelAdd() {
+        document.getElementById('addStudentForm').style.display = 'none';
+        document.getElementById('addMessage').textContent = '';
+    }
+
+    // Add Student Function
+    function addStudent() {
+        let studentId = document.getElementById('studentId').value;
+        let studentName = document.getElementById('studentName').value;
+        let studentAge = document.getElementById('studentAge').value;
+        let studentGrade = document.getElementById('studentGrade').value;
+
+        if (!studentId || !studentName || !studentAge || !studentGrade) {
+            document.getElementById('addMessage').textContent = "Please fill in all fields.";
+            document.getElementById('addMessage').classList.add('error');
+            return;
+        }
+
+        students[studentId] = {name: studentName, age: studentAge, grade: studentGrade};
+        studentIds.push(studentId);
+
+        document.getElementById('addMessage').textContent = "Student added successfully!";
+        document.getElementById('addMessage').classList.remove('error');
+        cancelAdd();
+    }
+
+    // View All Students
+    function viewStudents() {
+        if (studentIds.length === 0) {
+            alert("No students found.");
+            return;
+        }
+
+        let tableBody = document.getElementById('studentsTable').getElementsByTagName('tbody')[0];
+        tableBody.innerHTML = '';
+
+        studentIds.forEach(studentId => {
+            let student = students[studentId];
+            let row = tableBody.insertRow();
+            row.insertCell(0).textContent = studentId;
+            row.insertCell(1).textContent = student.name;
+            row.insertCell(2).textContent = student.age;
+            row.insertCell(3).textContent = student.grade;
+
+            // Add actions (update, delete)
+            let actionsCell = row.insertCell(4);
+            actionsCell.innerHTML = `
+                <button class="btn" onclick="updateStudent('${studentId}')">Update</button>
+                <button class="btn" onclick="deleteStudent('${studentId}')">Delete</button>
+            `;
+        });
+
+        document.getElementById('studentsList').style.display = 'block';
+        document.getElementById('addStudentForm').style.display = 'none';
+        document.getElementById('searchStudentForm').style.display = 'none';
+    }
+
+    // Show Search Student Form
+    function showSearchForm() {
+        document.getElementById('searchStudentForm').style.display = 'block';
+        document.getElementById('studentsList').style.display = 'none';
+        document.getElementById('addStudentForm').style.display = 'none';
+    }
+
+    // Search Student Function
+    function searchStudent() {
+        let searchId = document.getElementById('searchId').value;
+
+        if (students[searchId]) {
+            let student = students[searchId];
+            document.getElementById('searchResult').textContent = `
+                ID: ${searchId}, Name: ${student.name}, Age: ${student.age}, Grade: ${student.grade}
+            `;
+        } else {
+            document.getElementById('searchResult').textContent = "Student not found.";
+        }
+    }
+
+    // Cancel Search Form
+    function cancelSearch() {
+        document.getElementById('searchStudentForm').style.display = 'none';
+        document.getElementById('searchResult').textContent = '';
+    }
+
+    // Update Student Information
+    function updateStudent(studentId) {
+        let student = students[studentId];
+        let newName = prompt("Enter new name:", student.name);
+        let newAge = prompt("Enter new age:", student.age);
+        let newGrade = prompt("Enter new grade:", student.grade);
+
+        if (newName !== null && newAge !== null && newGrade !== null) {
+            students[studentId] = {name: newName, age: newAge, grade: newGrade};
+            alert("Student information updated successfully!");
+            viewStudents();
+        }
+    }
+
+    // Delete Student Record
+    function deleteStudent(studentId) {
+        let confirmDelete = confirm("Are you sure you want to delete this student?");
+        if (confirmDelete) {
+            delete students[studentId];
+            studentIds = studentIds.filter(id => id !== studentId);
+            alert("Student record deleted successfully!");
+            viewStudents();
+        }
+    }
+</script>
+
+  
+    /
+
+
+
+</body></html>
